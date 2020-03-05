@@ -1,0 +1,22 @@
+version: 0.1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - nvm install 12.14.1
+        - nvm use v12.14.1
+        - npm install
+        - touch .env
+    build:
+      commands: 
+        - nvm use v12.14.1
+        - node -v
+        - echo "$OBJECT_ENV" > .env
+        - npm start
+  artifacts:
+    baseDirectory: /
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - node_modules/**/*
