@@ -13,7 +13,7 @@ const queryGetConsultants = `
 router.get('/', async (req, res) => {
     const connection = await mysqlConnection.getConnection();
     const [rows, fields] = await connection.execute(queryGetConsultants);
-    auth.returnMessage(res, 200, 'data', rows); 
+    auth.returnMessage(res, 200, 'data', rows);
 });
 
 router.get('/report/:user/:init_date/:end_date', async (req, res) => {
