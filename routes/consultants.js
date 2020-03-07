@@ -10,6 +10,8 @@ const queryGetConsultants = `
     where ps.co_sistema = '1' AND ps.in_ativo = 'S' AND ps.co_tipo_usuario in (1,2,3);
 `;
 
+let sumReceitaLiquida = 0;
+
 router.get('/', async (req, res) => {
     const connection = await mysqlConnection.getConnection();
     const [rows, fields] = await connection.execute(queryGetConsultants);
@@ -25,7 +27,8 @@ router.get('/report/:user/:init_date/:end_date', async (req, res) => {
         receitaLiquita: receitaLiquita,
         custoFixo: custoFixo,
         comissao: comissao,
-        lucro: lucro
+        lucro: lucro,
+        sumReceitaLiquida: sumReceitaLiquida
     }
     auth.returnMessage(res, 200, 'data', data);
 });
@@ -48,6 +51,7 @@ async function calculateTotalReceitaLiquida(rows) {
     if(rows.length > 0) {
         for (let i = 0; i < rows.length; i++) {
             rows[i].total = Math.round(rows[i].valor - (rows[i].valor * (rows[i].total_imp_inc / 100)));
+            sumReceitaLiquida += rows[i].total;
         }
     }
     return rows;
