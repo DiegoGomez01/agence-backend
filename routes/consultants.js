@@ -45,8 +45,10 @@ async function getReceitaLiquida(req, res) {
 }
 
 async function calculateTotalReceitaLiquida(rows) {
-    for (let i = 0; i < rows.length; i++) {
-        rows[i].total = Math.round(rows[i].valor - (rows[i].valor * (rows[i].total_imp_inc / 100)));
+    if(rows.length > 0) {
+        for (let i = 0; i < rows.length; i++) {
+            rows[i].total = Math.round(rows[i].valor - (rows[i].valor * (rows[i].total_imp_inc / 100)));
+        }
     }
     return rows;
 }
@@ -74,8 +76,10 @@ async function getComissao(req, res) {
 }
 
 async function calculateTotalComissao(rows) {
-    for (let i = 0; i < rows.length; i++) {
-        rows[i].total = Math.round((rows[i].valor - (rows[i].valor * (rows[i].total_imp_inc / 100))) * rows[i].comissao_cn / 100);
+    if(rows.length > 0) {
+        for (let i = 0; i < rows.length; i++) {
+            rows[i].total = Math.round((rows[i].valor - (rows[i].valor * (rows[i].total_imp_inc / 100))) * rows[i].comissao_cn / 100);
+        }
     }
     return rows;
 }
