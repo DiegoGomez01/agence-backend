@@ -33,7 +33,7 @@ router.get('/report/:user/:init_date/:end_date', async (req, res) => {
 async function getReceitaLiquida(req, res) {
     const { user, init_date, end_date } = req.params;
     query = `
-        select distinct ROUND(sum(valor),0) as 'valor', MONTH(data_emissao) as 'mes', total_imp_inc from cao_fatura where co_os in (
+        select distinct ROUND(sum(valor),0) as 'valor', MONTH(data_emissao) as 'mes', YEAR(data_emissao) as 'year', total_imp_inc from cao_fatura where co_os in (
             select distinct co_os from cao_os where co_usuario = ?
         ) AND data_emissao between ? and ? 
         group by MONTH(data_emissao) ORDER BY MONTH(data_emissao) ASC;
