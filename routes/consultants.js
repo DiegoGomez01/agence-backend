@@ -19,6 +19,7 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/report/:user/:init_date/:end_date', async (req, res) => {
+    sumReceitaLiquida = 0
     const receitaLiquita = await getReceitaLiquida(req, res);
     const custoFixo = await getCustoFixo(req, res);
     const comissao = await getComissao(req, res);
