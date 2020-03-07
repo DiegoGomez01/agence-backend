@@ -7,7 +7,7 @@ const mysqlConnection  = require('../database.js');
 
 const queryGetConsultants = `
     select cu.co_usuario as 'id', no_usuario as 'name' from cao_usuario as cu join permissao_sistema ps on cu.co_usuario = ps.co_usuario
-    where ps.co_sistema = '1' && ps.in_ativo = 'S' && ps.co_tipo_usuario in (1,2,3);
+    where ps.co_sistema = '1' AND ps.in_ativo = 'S' AND ps.co_tipo_usuario in (1,2,3);
 `;
 
 router.get('/', async (req, res) => {
@@ -35,7 +35,7 @@ async function getReceitaLiquida(req, res) {
     query = `
         select distinct ROUND(sum(valor),0) as 'valor', MONTH(data_emissao) as 'mes', total_imp_inc from cao_fatura where co_os in (
             select distinct co_os from cao_os where co_usuario = ?
-        ) && data_emissao between ? and ? 
+        ) AND data_emissao between ? and ? 
         group by MONTH(data_emissao) ORDER BY MONTH(data_emissao) ASC;
     `
     const connection = await mysqlConnection.getConnection();
@@ -64,7 +64,7 @@ async function getComissao(req, res) {
     query = `
         select distinct ROUND(sum(valor),0) as 'valor', total_imp_inc, comissao_cn, MONTH(data_emissao) as 'mes' from cao_fatura where co_os in (
             select distinct co_os from cao_os where co_usuario = ?
-        ) && data_emissao between ? and ? 
+        ) AND data_emissao between ? and ? 
         group by MONTH(data_emissao) ORDER BY MONTH(data_emissao) ASC;
     `
     const connection = await mysqlConnection.getConnection();
