@@ -40,7 +40,7 @@ async function getReceitaLiquida(req, res) {
         select distinct ROUND(sum(valor),0) as 'value', MONTH(data_emissao) as 'month', YEAR(data_emissao) as 'year', total_imp_inc from cao_fatura where co_os in (
             select distinct co_os from cao_os where co_usuario = ?
         ) AND data_emissao between ? and ? 
-        group by MONTH(data_emissao) ORDER BY MONTH(data_emissao) ASC;
+        group by MONTH(data_emissao)+'-'+YEAR(data_emissao) ORDER BY MONTH(data_emissao)+'-'+YEAR(data_emissao) ASC;
     `
     const connection = await mysqlConnection.getConnection();
     let [rows, fields] = await connection.execute(query, [user, init_date, end_date]);
@@ -72,7 +72,7 @@ async function getComissao(req, res) {
         select distinct ROUND(sum(valor),0) as 'value', total_imp_inc, comissao_cn, MONTH(data_emissao) as 'month' from cao_fatura where co_os in (
             select distinct co_os from cao_os where co_usuario = ?
         ) AND data_emissao between ? and ? 
-        group by MONTH(data_emissao) ORDER BY MONTH(data_emissao) ASC;
+        group by MONTH(data_emissao)+'-'+YEAR(data_emissao) ORDER BY MONTH(data_emissao)+'-'+YEAR(data_emissao) ASC;
     `
     const connection = await mysqlConnection.getConnection();
     let [rows, fields] = await connection.execute(query, [user, init_date, end_date]);
