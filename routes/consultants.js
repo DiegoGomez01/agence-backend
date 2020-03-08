@@ -60,9 +60,14 @@ async function calculateTotalReceitaLiquida(rows) {
 
 async function getCustoFixo(req, res) {
     const { user } = req.params;
-    query = `select IF ( brut_salario is NULL, DEFAULT ( brut_salario ), 0 ) as 'brut_salario' from cao_salario where co_usuario = ?;`
+    query = `select brut_salario from cao_salario where co_usuario = ?;`
     const connection = await mysqlConnection.getConnection();
-    const [rows, fields] = await connection.execute(query, [user]);
+    let [rows, fields] = await connection.execute(query, [user]);
+    if(rows.length === 0) {
+        rows = [{
+            "brut_salario": 0
+        }]
+    }
     return rows;
 }
 
