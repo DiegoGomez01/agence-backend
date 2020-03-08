@@ -37,10 +37,10 @@ router.get('/report/:user/:init_date/:end_date', async (req, res) => {
 async function getReceitaLiquida(req, res) {
     const { user, init_date, end_date } = req.params;
     query = `
-        select distinct ROUND(sum(valor),0) as 'valor', MONTH(data_emissao) as 'mes', YEAR(data_emissao) as 'year', total_imp_inc from cao_fatura where co_os in (
+        select distinct ROUND(sum(valor),0) as 'value', MONTH(data_emissao) as 'month', YEAR(data_emissao) as 'year', total_imp_inc from cao_fatura where co_os in (
             select distinct co_os from cao_os where co_usuario = ?
         ) AND data_emissao between ? and ? 
-        group by MONTH(data_emissao) ORDER BY MONTH(data_emissao) ASC;
+        group by MONTH(data_emissao)+'-'+YEAR(data_emissao) ORDER BY MONTH(data_emissao)+'-'+YEAR(data_emissao) ASC;
     `
     const connection = await mysqlConnection.getConnection();
     let [rows, fields] = await connection.execute(query, [user, init_date, end_date]);
@@ -51,7 +51,7 @@ async function getReceitaLiquida(req, res) {
 async function calculateTotalReceitaLiquida(rows) {
     if(rows.length > 0) {
         for (let i = 0; i < rows.length; i++) {
-            rows[i].total = Math.round(rows[i].valor - (rows[i].valor * (rows[i].total_imp_inc / 100)));
+            rows[i].total = Math.round(rows[i].value - (rows[i].value * (rows[i].total_imp_inc / 100)));
             sumReceitaLiquida += rows[i].total;
         }
     }
@@ -60,7 +60,7 @@ async function calculateTotalReceitaLiquida(rows) {
 
 async function getCustoFixo(req, res) {
     const { user } = req.params;
-    query = `select brut_salario from cao_salario where co_usuario = ?;`
+    query = `select IF ( brut_salario is NULL, DEFAULT ( brut_salario ), 0 ) as 'brut_salario' from cao_salario where co_usuario = ?;`
     const connection = await mysqlConnection.getConnection();
     const [rows, fields] = await connection.execute(query, [user]);
     return rows;
@@ -69,10 +69,10 @@ async function getCustoFixo(req, res) {
 async function getComissao(req, res) {
     const { user, init_date, end_date } = req.params;
     query = `
-        select distinct ROUND(sum(valor),0) as 'valor', total_imp_inc, comissao_cn, MONTH(data_emissao) as 'mes' from cao_fatura where co_os in (
+        select distinct ROUND(sum(valor),0) as 'value', total_imp_inc, comissao_cn, MONTH(data_emissao) as 'month' from cao_fatura where co_os in (
             select distinct co_os from cao_os where co_usuario = ?
         ) AND data_emissao between ? and ? 
-        group by MONTH(data_emissao) ORDER BY MONTH(data_emissao) ASC;
+        group by MONTH(data_emissao)+'-'+YEAR(data_emissao) ORDER BY MONTH(data_emissao)+'-'+YEAR(data_emissao) ASC;
     `
     const connection = await mysqlConnection.getConnection();
     let [rows, fields] = await connection.execute(query, [user, init_date, end_date]);
@@ -83,7 +83,7 @@ async function getComissao(req, res) {
 async function calculateTotalComissao(rows) {
     if(rows.length > 0) {
         for (let i = 0; i < rows.length; i++) {
-            rows[i].total = Math.round((rows[i].valor - (rows[i].valor * (rows[i].total_imp_inc / 100))) * rows[i].comissao_cn / 100);
+            rows[i].total = Math.round((rows[i].value - (rows[i].value * (rows[i].total_imp_inc / 100))) * rows[i].comissao_cn / 100);
         }
     }
     return rows;
@@ -93,7 +93,7 @@ async function getLucro(receitaLiquita, custoFixo, comissao) {
     const lucro = [];
     for (let i = 0; i < receitaLiquita.length; i++) {
         lucro.push({
-            "mes": receitaLiquita[i].mes,
+            "month": receitaLiquita[i].month,
             "total": Math.round(receitaLiquita[i].total - (custoFixo[0].brut_salario + comissao[i].total))
         });
     }
