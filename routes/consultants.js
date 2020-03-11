@@ -7,7 +7,7 @@ const mysqlConnection  = require('../database.js');
 
 const queryGetConsultants = `
     select cu.co_usuario as 'id', no_usuario as 'name' from cao_usuario as cu join permissao_sistema ps on cu.co_usuario = ps.co_usuario
-    where ps.co_sistema = '1' AND ps.in_ativo = 'S' AND ps.co_tipo_usuario in (1,2,3);
+    where ps.co_sistema = '1' AND ps.in_ativo = 'S' AND ps.co_tipo_usuario in (0,1,2);
 `;
 
 let sumReceitaLiquida = 0;
